@@ -1,0 +1,11 @@
+[package]
+name = "Bragi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7.9"
+diesel = { version = "2.2.6", features = ["postgres"] }
+dotenvy = "0.15.7"
+tokio = "1.42.0"
+sea-orm = { version = "1.1.0", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros" ] }
