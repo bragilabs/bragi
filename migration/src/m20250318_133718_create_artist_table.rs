@@ -13,8 +13,6 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         pk_auto(Artist::ID)
-                            .primary_key()
-                            .auto_increment()
                             .unsigned()
                     )
 

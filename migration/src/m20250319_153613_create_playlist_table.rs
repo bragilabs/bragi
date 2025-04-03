@@ -14,9 +14,7 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
 
                     .col(
-                        integer(Playlist::ID)
-                            .primary_key()
-                            .auto_increment()
+                        pk_auto(Playlist::ID)
                             .unsigned()
                     )
 

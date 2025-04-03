@@ -17,9 +17,7 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
 
                     .col(
-                        integer(Track::ID)
-                            .primary_key()
-                            .auto_increment()
+                        pk_auto(Track::ID)
                             .unsigned()
                     )
 

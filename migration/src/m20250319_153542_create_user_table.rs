@@ -13,9 +13,7 @@ impl MigrationTrait for Migration {
                     .table(User::Table)
                     .if_not_exists()
                     .col(
-                        integer(User::ID)
-                            .primary_key()
-                            .auto_increment()
+                        pk_auto(User::ID)
                             .unsigned()
                     )
 
