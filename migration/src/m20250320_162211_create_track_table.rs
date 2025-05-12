@@ -1,7 +1,5 @@
-use std::convert::identity;
-use std::ops::DerefMut;
-use std::os::raw::c_uint;
 use sea_orm_migration::{prelude::*, schema::*};
+use crate::m20250319_153237_create_album_table::Album;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -18,7 +16,6 @@ impl MigrationTrait for Migration {
 
                     .col(
                         pk_auto(Track::ID)
-                            .unsigned()
                     )
 
                     .col(
@@ -31,10 +28,31 @@ impl MigrationTrait for Migration {
                         string(Track::Path)
                             .not_null()
                     )
-
+                    
+                    .col(
+                        integer(Track::TrackNumber)
+                            .not_null()
+                            .unsigned()
+                    )
+                    
+                    .col(
+                        integer(Track::Duration)
+                            .not_null()
+                            .unsigned()
+                    )
+                    
                     .col(
                         integer(Track::AlbumID)
                             .unsigned()
+                            .not_null()
+                    )
+                    
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("FK_Track_Album")
+                            .from(Track::Table, Track::AlbumID)
+                            .to(Album::Table, Album::ID)
+                            .on_delete(ForeignKeyAction::Cascade)
                     )
 
                     .to_owned(),
@@ -56,5 +74,7 @@ enum Track {
     ID,
     Title,
     Path,
+    TrackNumber,
+    Duration,
     AlbumID
 }

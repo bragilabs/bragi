@@ -1,0 +1,14 @@
+[package]
+name = "scanner"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "scanner"
+path = "src/lib.rs"
+
+[dependencies]
+walkdir = "2.5.0"
+service = { path = "../service" }
+sea-orm = "1.1.11"
+blake3 = "1.8.2"

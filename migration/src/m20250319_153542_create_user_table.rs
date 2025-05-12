@@ -14,7 +14,6 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         pk_auto(User::ID)
-                            .unsigned()
                     )
 
                     .col(

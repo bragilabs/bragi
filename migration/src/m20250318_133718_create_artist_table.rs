@@ -13,7 +13,6 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         pk_auto(Artist::ID)
-                            .unsigned()
                     )
 
                     .col(
@@ -40,7 +39,7 @@ impl MigrationTrait for Migration {
 }
 
 #[derive(DeriveIden)]
-enum Artist {
+pub enum Artist {
     Table,
     ID,
     Name,

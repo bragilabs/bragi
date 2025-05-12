@@ -1,4 +1,5 @@
 use sea_orm_migration::{prelude::*, schema::*};
+use crate::m20250318_133718_create_artist_table::Artist;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -14,7 +15,6 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         pk_auto(Album::ID)
-                            .unsigned()
                     )
 
                     .col(
@@ -26,10 +26,24 @@ impl MigrationTrait for Migration {
                         string(Album::Path)
                             .not_null()
                     )
-
+                    
+                    .col(
+                        integer(Album::ReleaseYear)
+                            .not_null()
+                            .unsigned()
+                    )
+                    
                     .col(
                         integer(Album::ArtistID)
                             .unsigned()
+                    )
+                    
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("FK_Album_Artist")
+                            .from(Album::Table, Album::ArtistID)
+                            .to(Artist::Table, Artist::ID)
+                            .on_delete(ForeignKeyAction::Cascade)
                     )
 
                     .to_owned(),
@@ -46,10 +60,11 @@ impl MigrationTrait for Migration {
 }
 
 #[derive(DeriveIden)]
-enum Album {
+pub enum Album {
     Table,
     ID,
     Title,
     Path,
+    ReleaseYear,
     ArtistID
 }

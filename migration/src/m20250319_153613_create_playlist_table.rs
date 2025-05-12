@@ -15,7 +15,6 @@ impl MigrationTrait for Migration {
 
                     .col(
                         pk_auto(Playlist::ID)
-                            .unsigned()
                     )
 
                     .col(
