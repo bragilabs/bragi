@@ -25,10 +25,12 @@ fn hash_artist_folder(path: &str) -> String {
     
     hasher.finalize().to_hex().to_string()
 }
-pub async fn scan(path: &str, artist_service: Arc<ArtistService>) {
+
+/// Scans the library directory for artists
+pub async fn scan_library(path: &str, artist_service: Arc<ArtistService>) {
     println!("Scanning {}", path);
     println!("-------------------");
-    for entry in WalkDir::new(path).min_depth(1).into_iter().filter_map(|e| e.ok()) {
+    for entry in WalkDir::new(path).min_depth(1).max_depth(1).into_iter().filter_map(|e| e.ok()) {
         if is_hidden(&entry) {
             continue;
         }
@@ -46,11 +48,12 @@ pub async fn scan(path: &str, artist_service: Arc<ArtistService>) {
                 }
                 if artist.checksum.unwrap().to_string() != artist_hash {
                     println!("Artist checksum does not match, updating...");
-                    artist_service.create(
-                        file_name.to_string(),
-                        entry.path().to_str().unwrap().to_string(),
-                    ).await.unwrap();
-                    println!("Updated artist in the database: {}", file_name);
+                    artist_service.alter(artist.id, ArtistAlter {
+                        checksum: Some(artist_hash.clone()),
+                        name: None,
+                        path: None
+                    }).await.expect("TODO: panic message");
+                    println!("Updated artist checksum in the database: {}", artist_hash);
                 } else {
                     println!("Artist checksum matches, no update needed.");
                 }
@@ -61,12 +64,9 @@ pub async fn scan(path: &str, artist_service: Arc<ArtistService>) {
                     name: file_name.to_string(),
                     path: path.to_string(),
                     checksum: Some(artist_hash),
-                }
+                };
 
-                artist_service.create(
-                    file_name.to_string(),
-                    entry.path().to_str().unwrap().to_string(),
-                ).await.unwrap();
+                artist_service.create(artist).await.unwrap();
                 println!("Created new artist in the database: {}", file_name);
             }
             println!("Scanning directory: {}", entry.path().display());
@@ -74,4 +74,23 @@ pub async fn scan(path: &str, artist_service: Arc<ArtistService>) {
         }
     }
     println!("-------------------");
+}
+
+/// Scans the artist directory for albums
+async fn scan_artist(path: &str) {
+    for entry in WalkDir::new(path).min_depth(1).into_iter().filter_map(|e| e.ok()) {
+        if is_hidden(&entry) {
+            continue;
+        }
+        if entry.file_type().is_dir() {
+
+        }
+    }
+}
+
+/// Scans the album folder for tracks
+async fn scan_albums(path: &str) {
+    for entry in WalkDir::new(path).min_depth(1).max_depth(1).into_iter().filter_map(|e| e.ok()) {
+
+    }
 }

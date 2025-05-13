@@ -4,12 +4,31 @@
 
 Roadmap
 - [ ] Expand README
-- [ ] Create database schema
+- [x] Create database schema
+- [ ] Replace unwrap() calls with safer options
 - [ ] Implement user authentication
 - [ ] Implement music streaming
 - [ ] Implement basic endpoints
-- [ ] Add license
+- [x] Add license
 - [ ] Add used technologies
+
+## Installation
+Clone the repository and cd into it
+```bash
+git clone https://github.com/siqius/bragi.git
+cd bragi
+```
+
+Add the database url to the .env, see .env.example for an example:
+```
+touch .env
+nano .env
+```
+
+Run it
+```
+cargo run
+```
 
 ## Directory Structure
 ```
@@ -20,3 +39,5 @@ scanner - Scans the filesystem for music files
 service - All logic goes here
 src - Main entry point for the application
 ```
+
+
