@@ -10,5 +10,7 @@ members = [".", "api", "entities", "migration", "scanner", "service"]
 dotenvy = "0.15.7"
 scanner = { path = "scanner" }
 service = { path = "service" }
+api = { path = "api" }
 sea-orm = { version = "1.1.11", features = ["sqlx-postgres", "runtime-tokio-rustls"] }
 tokio = { version = "1.44.1", features = ["macros", "rt-multi-thread"] }
+axum = "0.8.4"

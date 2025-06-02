@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use sea_orm::*;
 use entities::album::*;
-use entities::album::Column::Title;
+use entities::album::Column::{Title, ArtistId};
 use entities::prelude::Album;
 
 pub struct AlbumService {
@@ -45,5 +45,13 @@ impl AlbumService {
     
     pub async fn get_by_id(&self, album_id: i32) -> Result<Option<Model>, DbErr> {
         Entity::find_by_id(album_id).one(self.db.as_ref()).await
+    }
+    
+    pub async fn get_by_artist_id(&self, artist_id: i32) -> Result<Option<Vec<Model>>, DbErr> {
+        Entity::find()
+            .filter(ArtistId.eq(artist_id))
+            .all(self.db.as_ref())
+            .await
+            .map(|albums| if albums.is_empty() { None } else { Some(albums) })
     }
 }

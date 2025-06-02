@@ -1,8 +1,8 @@
+use sea_orm::*;
 use std::sync::Arc;
-use sea_orm::{ActiveModelTrait, DatabaseConnection, DbErr, EntityTrait, ModelTrait, NotSet, Set};
 use entities::album::Model as AlbumModel;
 use entities::track::*;
-
+use entities::track::Column::AlbumId;
 pub struct TrackService {
     db: Arc<DatabaseConnection>
 }
@@ -42,5 +42,13 @@ impl TrackService {
         let track = track.insert(self.db.as_ref()).await?;
         
         Ok(track)
+    }
+    
+    pub async fn get_by_album_id(&self, album_id: i32) -> Result<Option<Vec<Model>>, DbErr> {
+        Entity::find()
+            .filter(AlbumId.eq(album_id))
+            .all(self.db.as_ref())
+            .await
+            .map(|tracks| if tracks.is_empty() { None } else { Some(tracks) })
     }
 }

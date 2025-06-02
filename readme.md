@@ -20,7 +20,7 @@ git clone https://github.com/siqius/bragi.git
 cd bragi
 ```
 
-Add the database url to the .env, see .env.example for an example:
+Add the database url and the library path to the .env, see .env.example for an example:
 ```
 touch .env
 nano .env
