@@ -6,6 +6,7 @@ Roadmap
 - [ ] Expand README
 - [x] Create database schema
 - [ ] Replace unwrap() calls with safer options
+- [ ] Create a service trait for generic service methods
 - [ ] Implement user authentication
 - [ ] Implement music streaming
 - [ ] Implement basic endpoints
@@ -40,4 +41,20 @@ service - All logic goes here
 src - Main entry point for the application
 ```
 
+## Naming Conventions
+Bragi follows a similar naming convention to Jellyfin:
+```
+- Music
+ - Artist
+  - Album (Release Year)
+   - Track number. Artist - Track Name
+```
 
+For example:
+```
+- Music
+ - Metallica
+  - Master of Puppets (1986)
+   - 01. Metallica - Battery.flac
+   - 02. Metallica - Master of Puppets.mp3
+```

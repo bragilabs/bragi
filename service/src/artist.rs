@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use sea_orm::*;
-use entities::artist::{ActiveModel, Entity as Artist};
+use entities::artist::{ActiveModel, Entity, Model};
 
 pub struct ArtistService {
     db: Arc<DatabaseConnection>,
@@ -22,15 +22,15 @@ impl ArtistService {
     pub fn new(db: Arc<DatabaseConnection>) -> Self {
         ArtistService { db }
     }
-    pub async fn get_all(&self) -> Result<Vec<entities::artist::Model>, DbErr> {
-        Artist::find().all(self.db.as_ref()).await
+    pub async fn get_all(&self) -> Result<Vec<Model>, DbErr> {
+        Entity::find().all(self.db.as_ref()).await
     }
 
-    pub async fn get_by_id(&self, id: i32) -> Result<Option<entities::artist::Model>, DbErr> {
-        Artist::find_by_id(id).one(self.db.as_ref()).await
+    pub async fn get_by_id(&self, id: i32) -> Result<Option<Model>, DbErr> {
+        Entity::find_by_id(id).one(self.db.as_ref()).await
     }
 
-    pub async fn create(&self, create_body: ArtistCreate) -> Result<entities::artist::Model, DbErr> {
+    pub async fn create(&self, create_body: ArtistCreate) -> Result<Model, DbErr> {
         let artist = ActiveModel {
             id: NotSet,
             name: Set(create_body.name),
@@ -41,20 +41,20 @@ impl ArtistService {
         Ok(artist)
     }
 
-    pub async fn get_by_name(&self, name: &str) -> Result<Option<entities::artist::Model>, DbErr> {
-        Artist::find()
+    pub async fn get_by_name(&self, name: &str) -> Result<Option<Model>, DbErr> {
+        Entity::find()
             .filter(entities::artist::Column::Name.contains(name))
             .one(self.db.as_ref()).await
     }
 
     pub async fn exists(&self, name: &str) -> Result<bool, DbErr> {
-        let count = Artist::find()
+        let count = Entity::find()
             .filter(entities::artist::Column::Name.contains(name))
             .count(self.db.as_ref()).await?;
         Ok(count > 0)
     }
 
-    pub async fn alter(&self, id: i32, alter_body: ArtistAlter) -> Result<entities::artist::Model, DbErr> {
+    pub async fn alter(&self, id: i32, alter_body: ArtistAlter) -> Result<Model, DbErr> {
         let mut artist: ActiveModel = self.get_by_id(id).await?.unwrap().into();
 
         if let Some(name) = alter_body.name {

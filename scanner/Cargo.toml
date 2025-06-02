@@ -12,3 +12,6 @@ walkdir = "2.5.0"
 service = { path = "../service" }
 sea-orm = "1.1.11"
 blake3 = "1.8.2"
+regex = "1.11.1"
+once_cell = "1.21.3"
+lazy_static = "1.5.0"

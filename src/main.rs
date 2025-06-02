@@ -2,9 +2,11 @@ use std::process::exit;
 use std::sync::Arc;
 use std::time::Duration;
 use dotenvy::dotenv;
-use scanner::scan_library;
+use scanner::{Scanner};
 use sea_orm::{DatabaseConnection, Database, ConnectOptions};
+use service::album::AlbumService;
 use service::artist::ArtistService;
+use service::track::TrackService;
 
 async fn init_db() -> DatabaseConnection {
     dotenv().ok();
@@ -38,7 +40,9 @@ async fn main() {
     let db = Arc::new(db.await);
     
     let artist_service = Arc::new(ArtistService::new(db.clone()));
-    
-    scan_library("/home/aron/Music/", artist_service.clone()).await;
+    let album_service = Arc::new(AlbumService::new(db.clone()));
+    let track_service = Arc::new(TrackService::new(db.clone()));
+    let scanner = Scanner::new(artist_service, album_service, track_service);
+    scanner.scan_library("/home/aron/Music/").await;
     println!("Done.");
 }
