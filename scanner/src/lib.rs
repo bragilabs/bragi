@@ -7,7 +7,6 @@ use service::album::{AlbumCreate, AlbumService};
 use regex::Regex;
 use service::track::{TrackCreate, TrackService};
 use once_cell::sync::Lazy;
-use sea_orm::Iden;
 
 struct TrackInfo {
     title: String,
@@ -18,28 +17,28 @@ pub struct Scanner {
     artist_service: Arc<ArtistService>,
     album_service: Arc<AlbumService>,
     track_service: Arc<TrackService>,
+    library_path: String,
 }
 
 impl Scanner {
 
-    pub fn new(artist_service: Arc<ArtistService>, album_service: Arc<AlbumService>, track_service: Arc<TrackService>) -> Self {
-        Scanner { artist_service, album_service, track_service }
+    pub fn new(artist_service: Arc<ArtistService>, album_service: Arc<AlbumService>, track_service: Arc<TrackService>, library_path: String) -> Self {
+        Scanner { artist_service, album_service, track_service, library_path }
     }
-    pub async fn scan_library(&self, path: &str) {
-        println!("Scanning {}", path);
+    pub async fn scan_library(&self) {
+        println!("Scanning {}", self.library_path);
         println!("-------------------");
         let all_artists = self.artist_service.get_all().await.unwrap();
         let artist_map: HashMap<String, (i32, Option<String>)> = all_artists
             .into_iter()
             .map(|artist| (artist.name.clone(), (artist.id.clone(), artist.checksum.clone())))
             .collect();
-        for entry in WalkDir::new(path).min_depth(1).max_depth(1).into_iter().filter_map(|e| e.ok()) {
+        for entry in WalkDir::new(self.library_path.clone()).min_depth(1).max_depth(1).into_iter().filter_map(|e| e.ok()) {
             if is_hidden(&entry) {
                 continue;
             }
             if entry.file_type().is_dir() {
                 let artist_name = entry.file_name().to_str().unwrap();
-                let file_path = entry.path().to_str().unwrap();
                 println!("Found Artist directory: {}", entry.path().display());
                 let current_hash = hash_artist_folder(entry.path().to_str().unwrap());
                 if let Some((artist_id, stored_hash)) = artist_map.get(&artist_name.to_string()) {
@@ -52,7 +51,7 @@ impl Scanner {
                             path: None
                         }).await.expect("TODO: panic message");
                         Box::pin(self.scan_artist(entry.path(), artist_id.clone())).await;
-                        continue;;
+                        continue
 
                     }
                     if stored_hash.clone().unwrap() != current_hash {
@@ -73,7 +72,7 @@ impl Scanner {
 
                     let artist = ArtistCreate {
                         name: artist_name.to_string(),
-                        path: path.to_string(),
+                        path: self.library_path.to_string(),
                         checksum: Some(current_hash.clone()),
                     };
 

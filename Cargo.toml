@@ -14,3 +14,4 @@ api = { path = "api" }
 sea-orm = { version = "1.1.11", features = ["sqlx-postgres", "runtime-tokio-rustls"] }
 tokio = { version = "1.44.1", features = ["macros", "rt-multi-thread"] }
 axum = "0.8.4"
+tower-http = { version = "0.6.5", features = ["cors"] }

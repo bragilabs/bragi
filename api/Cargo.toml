@@ -11,4 +11,7 @@ path = "src/handlers.rs"
 axum = "0.8.4"
 serde = { version = "1.0.219", features = ["derive"] }
 service = { path = "../service" }
+scanner = { path = "../scanner" }
 entities = { path = "../entities" }
+tokio = "1.44.1"
+tokio-util = { version = "0.7.15", features = ["io"] }

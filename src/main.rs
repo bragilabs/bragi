@@ -9,6 +9,7 @@ use api::AppState;
 use service::album::AlbumService;
 use service::artist::ArtistService;
 use service::track::TrackService;
+use tower_http::cors::CorsLayer;
 
 
 async fn init_db() -> DatabaseConnection {
@@ -45,22 +46,27 @@ async fn main() {
     let artist_service = Arc::new(ArtistService::new(db.clone()));
     let album_service = Arc::new(AlbumService::new(db.clone()));
     let track_service = Arc::new(TrackService::new(db.clone()));
-    let scanner = Scanner::new(artist_service.clone(), album_service.clone(), track_service.clone());
     let library = std::env::var("LIBRARY_PATH").expect("LIBRARY_PATH must be set");
-    scanner.scan_library(library.as_str()).await;
+    let scanner = Scanner::new(artist_service.clone(), album_service.clone(), track_service.clone(), library);
+    scanner.scan_library().await;
     println!("Done scanning library.");
 
     let state = AppState {
         artist_service: artist_service.clone(),
         album_service: album_service.clone(),
         track_service: track_service.clone(),
+        scanner: Arc::new(scanner),
     };
 
     let app = axum::Router::new()
         .route("/api/artists", get(api::get_all_artists))
-        .route("/api/artists/{id}/albums", get(api::get_albums_by_artist))
-        .route("/api/albums/{id}/tracks", get(api::get_tracks_by_album))
-        .with_state(state);
+        .route("/api/artists/{artist_id}", get(api::get_artist_by_id))
+        .route("/api/artists/{artist_id}/albums", get(api::get_albums_by_artist))
+        .route("/api/albums/{album_id}/tracks", get(api::get_tracks_by_album))
+        .route("/api/library/scan", get(api::rescan_library))
+        .route("/api/track/{track_id}/play", get(api::stream_track))
+        .with_state(state)
+        .layer(CorsLayer::permissive());
 
     println!("Bragi is ready to serve requests!");
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();

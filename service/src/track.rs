@@ -51,4 +51,8 @@ impl TrackService {
             .await
             .map(|tracks| if tracks.is_empty() { None } else { Some(tracks) })
     }
+    
+    pub async fn get_by_id(&self, id: i32) -> Result<Option<Model>, DbErr> {
+        Entity::find_by_id(id).one(self.db.as_ref()).await
+    }
 }
